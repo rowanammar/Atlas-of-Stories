@@ -58,7 +58,7 @@ app.listen(PORT, () => {
   console.log('');
   console.log('╔══════════════════════════════════════════════╗');
   console.log('║        📚 Atlas of Stories — Backend         ║');
-  console.log(`║        Listening on port ${PORT}               ║`);
+  console.log(`║        Listening on port ${PORT}                ║`);
   console.log('╚══════════════════════════════════════════════╝');
   console.log('');
   console.log(`  Environment: ${process.env.NODE_ENV || 'development'}`);
