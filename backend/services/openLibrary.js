@@ -63,12 +63,7 @@ async function getBookDetails(workId) {
     };
   } catch (error) {
     console.error('Open Library details error:', error.message);
-    return {
-      title: 'Unknown Title',
-      description: '',
-      subjects: [],
-      places: [],
-    };
+    throw new Error('Failed to fetch book details from Open Library');
   }
 }
 

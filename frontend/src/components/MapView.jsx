@@ -31,6 +31,15 @@ const MapView = forwardRef(function MapView({ locations }, ref) {
   const mapRef = useRef(null);
   const markersRef = useRef([]);
 
+  // Close all open popups except the one at the given index (-1 = close all)
+  function closeAllPopups(exceptIndex = -1) {
+    markersRef.current.forEach((m, i) => {
+      if (i !== exceptIndex && m.getPopup()?.isOpen()) {
+        m.getPopup().remove();
+      }
+    });
+  }
+
   // Initialize map on mount
   useEffect(() => {
     if (mapRef.current) return;
@@ -62,8 +71,8 @@ const MapView = forwardRef(function MapView({ locations }, ref) {
           }
         ]
       },
-      center: [35.2137, 31.7683], // Center near Palestine
-      zoom: 6,
+      center: [20, 30], // World literary view
+      zoom: 2.5,
       attributionControl: false,
     });
 
@@ -148,20 +157,46 @@ const MapView = forwardRef(function MapView({ locations }, ref) {
     locations.forEach((loc, i) => {
       if (!loc.lat || !loc.lng) return;
 
+      // Build Snapchat-style floating pin
       const el = document.createElement('div');
-      el.className = `bubble-marker ${normalizeType(loc.type)}`;
-      el.style.animationDelay = `${i * 80}ms`;
+      el.className = `snap-pin ${normalizeType(loc.type)}`;
+      el.style.animationDelay = `${i * 100}ms`;
+
+      // Short display name (city only, strip country)
+      const shortName = loc.name.split(',')[0].trim();
+
+      el.innerHTML = `
+        <div class="snap-pin-label">${shortName}</div>
+        <div class="snap-pin-dot"></div>
+      `;
+
+      // Define specific offsets based on which direction the popup opens
+      const popupOffsets = {
+        'bottom': [0, -50], // popup sits above marker, move UP 50px to clear the label
+        'top': [0, 10],     // popup sits below marker, move DOWN 10px
+        'left': [20, -20],  // popup sits right of marker
+        'right': [-20, -20], // popup sits left of marker
+        'bottom-left': [10, -50],
+        'bottom-right': [-10, -50],
+        'top-left': [10, 10],
+        'top-right': [-10, 10]
+      };
 
       const popup = new maplibregl.Popup({
-        offset: 16,
-        maxWidth: '320px',
+        offset: popupOffsets,
+        maxWidth: '360px',
         closeButton: true,
       }).setHTML(buildPopupHTML(loc));
 
-      const marker = new maplibregl.Marker({ element: el })
+      const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([loc.lng, loc.lat])
         .setPopup(popup)
         .addTo(mapRef.current);
+
+      // Close all other popups when this one opens
+      el.addEventListener('click', () => {
+        closeAllPopups(i);
+      });
 
       markersRef.current.push(marker);
       bounds.extend([loc.lng, loc.lat]);
@@ -169,7 +204,7 @@ const MapView = forwardRef(function MapView({ locations }, ref) {
 
     if (!bounds.isEmpty()) {
       mapRef.current.fitBounds(bounds, {
-        padding: { top: 100, bottom: 60, left: 420, right: 60 },
+        padding: { top: 100, bottom: 60, left: 60, right: 60 },
         maxZoom: 12,
         duration: 1200,
       });
@@ -188,12 +223,16 @@ const MapView = forwardRef(function MapView({ locations }, ref) {
     openPopupAt(index) {
       const marker = markersRef.current[index];
       if (marker) {
-        marker.togglePopup();
+        closeAllPopups(index);
+        if (!marker.getPopup()?.isOpen()) {
+          marker.togglePopup();
+        }
         const lngLat = marker.getLngLat();
         mapRef.current?.flyTo({
           center: [lngLat.lng, lngLat.lat],
           zoom: 10,
           duration: 1500,
+          offset: [0, 150] // Push marker down 150px so the popup has room to open above it without clipping
         });
       }
     },

@@ -34,6 +34,8 @@ export default function SearchBar({ onBookSelected }) {
     setShowDropdown(false);
     setQuery(book.title);
     onBookSelected(book);
+    // Blur the input so the dropdown doesn't reappear on focus
+    document.activeElement?.blur();
   }
 
   function handleClear() {

@@ -12,6 +12,7 @@ function App() {
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [error, setError] = useState(null);
   const mapRef = useRef(null);
 
   const handleBookSelected = useCallback(async (book) => {
@@ -19,6 +20,7 @@ function App() {
     setIsLoading(true);
     setCurrentBook(book);
     setLocations([]);
+    setError(null);
 
     const workId = book.key
       ? book.key.replace('/works/', '')
@@ -30,6 +32,9 @@ function App() {
     } catch (err) {
       console.error('Failed to load locations:', err);
       setLocations([]);
+      setError('Could not load locations. Please try again.');
+      // Auto-dismiss error after 5 seconds
+      setTimeout(() => setError(null), 5000);
     } finally {
       setIsLoading(false);
     }
@@ -44,6 +49,7 @@ function App() {
   const handlePanelClose = useCallback(() => {
     setCurrentBook(null);
     setLocations([]);
+    setShowWelcome(true);
   }, []);
 
   return (
@@ -64,6 +70,13 @@ function App() {
       )}
 
       <SurpriseButton onBookSelected={handleBookSelected} />
+
+      {error && (
+        <div className="error-toast" onClick={() => setError(null)}>
+          <span className="error-toast-icon">⚠️</span>
+          <span>{error}</span>
+        </div>
+      )}
     </>
   );
 }

@@ -13,6 +13,7 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
+        timeout: 60000, // 60s — Gemini + geocoding can take 15-20s
       },
     },
   },

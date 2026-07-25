@@ -1,21 +1,13 @@
 
 
-const { VertexAI } = require('@google-cloud/vertexai');
+const { GoogleGenAI } = require('@google/genai');
 const { buildPrompt } = require('../prompts/extractLocations');
 
-// bndy Vertex AI project ID and region.
-const vertexAI = new VertexAI({
+// Initialize the Google Gen AI SDK with Vertex AI backend
+const ai = new GoogleGenAI({
+  vertexai: true,
   project: process.env.GCP_PROJECT_ID,
   location: 'us-central1',
-});
-
-// Get the Gemini 2.0 Flash model — it's fast and cost-effective
-const model = vertexAI.getGenerativeModel({
-  model: 'gemini-2.0-flash',
-  generationConfig: {
-    temperature: 0.3,     // Low temperature = more factual, less creative
-    maxOutputTokens: 4096, // Enough for ~15 locations with all fields
-  },
 });
 
 /**
@@ -49,9 +41,16 @@ async function extractLocations(bookInfo) {
     try {
       console.log(`Calling Gemini (attempt ${attempt}) for "${bookInfo.title}"...`);
 
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      const text = response.candidates[0].content.parts[0].text;
+      const result = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+          temperature: 0.3,       // Low temperature = more factual, less creative
+          maxOutputTokens: 16384, // Gemini 2.5 Flash uses tokens for thinking — needs headroom
+        },
+      });
+
+      const text = result.text;
 
       const cleaned = cleanJsonResponse(text);
       const locations = JSON.parse(cleaned);
