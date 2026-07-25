@@ -1,5 +1,23 @@
 const GEOCODING_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
+/** Helper: fetch with a timeout to prevent hanging requests */
+async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timer);
+    return response;
+  } catch (err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      throw new Error(`Geocoding request timed out after ${timeoutMs / 1000}s`);
+    }
+    throw err;
+  }
+}
+
 /**
  * geocodeLocation(placeName)
  *byhawel asamy el amaken ly co-ordinates
@@ -16,7 +34,13 @@ async function geocodeLocation(placeName) {
     }
 
     const url = `${GEOCODING_URL}?address=${encodeURIComponent(placeName)}&key=${apiKey}`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url, {}, 10000);
+
+    if (!response.ok) {
+      console.warn(` Geocoding API returned ${response.status} for "${placeName}"`);
+      return null;
+    }
+
     const data = await response.json();
 
     if (data.status === 'OK' && data.results.length > 0) {

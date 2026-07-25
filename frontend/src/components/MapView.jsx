@@ -102,7 +102,6 @@ const MapView = forwardRef(function MapView({ locations }, ref) {
           id: 'custom-labels-layer',
           type: 'symbol',
           source: 'custom-labels',
-          minzoom: 3,
           maxzoom: 9,
           layout: {
             'text-field': ['get', 'title'],

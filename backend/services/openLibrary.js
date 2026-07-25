@@ -5,16 +5,39 @@ const HEADERS = {
   'User-Agent': 'AtlasOfStories/1.0',
 };
 
+/** Helper: fetch with a timeout to prevent hanging requests */
+async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timer);
+    return response;
+  } catch (err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      throw new Error(`Open Library request timed out after ${timeoutMs / 1000}s`);
+    }
+    throw err;
+  }
+}
+
 /**
  * @param {string} query — The search term
  * @returns {Array} — Array of book objects: { workId, title, author, year, coverId }
  */
-
 async function searchBooks(query) {
   try {
     const url = `${BASE_URL}/search.json?q=${encodeURIComponent(query)}&limit=8&fields=key,title,author_name,first_publish_year,cover_i`;
 
-    const response = await fetch(url, { headers: HEADERS });
+    const response = await fetchWithTimeout(url, { headers: HEADERS }, 12000);
+
+    if (!response.ok) {
+      console.error(`Open Library search returned ${response.status}`);
+      return [];
+    }
+
     const data = await response.json();
 
     if (!data.docs || data.docs.length === 0) {
@@ -44,7 +67,12 @@ async function searchBooks(query) {
 async function getBookDetails(workId) {
   try {
     const url = `${BASE_URL}/works/${workId}.json`;
-    const response = await fetch(url, { headers: HEADERS });
+    const response = await fetchWithTimeout(url, { headers: HEADERS }, 12000);
+
+    if (!response.ok) {
+      throw new Error(`Open Library returned ${response.status} for ${workId}`);
+    }
+
     const data = await response.json();
 
     let description = '';

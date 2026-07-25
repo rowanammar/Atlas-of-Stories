@@ -1,4 +1,27 @@
+import { useState, useEffect } from 'react';
+
+const LOADING_PHRASES = [
+  'Tracing the cartography of fiction…',
+  'Following the author\'s footsteps…',
+  'Unfolding the literary atlas…',
+  'Mapping the pages of imagination…',
+  'Consulting ancient literary maps…',
+  'Discovering hidden geographies…',
+];
+
 export default function LoadingOverlay() {
+  const [phraseIndex, setPhraseIndex] = useState(
+    () => Math.floor(Math.random() * LOADING_PHRASES.length)
+  );
+
+  // Cycle through phrases every 7 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhraseIndex((prev) => (prev + 1) % LOADING_PHRASES.length);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="loading-overlay">
       <svg className="pl" viewBox="0 0 160 160" width="160px" height="160px" xmlns="http://www.w3.org/2000/svg">
@@ -80,7 +103,7 @@ export default function LoadingOverlay() {
           </g>
         </g>
       </svg>
-      <p className="loading-text">Exploring the literary world…</p>
+      <p className="loading-text" key={phraseIndex}>{LOADING_PHRASES[phraseIndex]}</p>
     </div>
   );
 }

@@ -23,8 +23,11 @@ export default function SurpriseButton({ onBookSelected }) {
       onClick={handleClick}
       aria-label="Surprise me with a random book"
     >
-      {loading ? '⏳' : '🎲'}
-      <span className="surprise-tooltip">Surprise me!</span>
+      <span className="surprise-icon">{loading ? '⏳' : '🎲'}</span>
+      <span className="surprise-tooltip">
+        <span className="surprise-tooltip-text">Surprise me!</span>
+        <span className="surprise-tooltip-sub">Random literary journey</span>
+      </span>
     </button>
   );
 }

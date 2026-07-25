@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useBookSearch } from '../hooks/useBookSearch';
 import SearchDropdown from './SearchDropdown';
 
 export default function SearchBar({ onBookSelected }) {
   const [query, setQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [hasSelected, setHasSelected] = useState(false);
   const { results, isLoading } = useBookSearch(query);
   const wrapperRef = useRef(null);
 
@@ -19,10 +20,12 @@ export default function SearchBar({ onBookSelected }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Show dropdown when results arrive
+  // Show dropdown when results arrive — but NOT if user just selected a book
   useEffect(() => {
-    if (results.length > 0) setShowDropdown(true);
-  }, [results]);
+    if (results.length > 0 && !hasSelected) {
+      setShowDropdown(true);
+    }
+  }, [results, hasSelected]);
 
   function handleKeyDown(e) {
     if (e.key === 'Escape') {
@@ -30,17 +33,25 @@ export default function SearchBar({ onBookSelected }) {
     }
   }
 
-  function handleSelect(book) {
+  const handleSelect = useCallback((book) => {
+    setHasSelected(true);
     setShowDropdown(false);
     setQuery(book.title);
     onBookSelected(book);
-    // Blur the input so the dropdown doesn't reappear on focus
     document.activeElement?.blur();
-  }
+  }, [onBookSelected]);
 
   function handleClear() {
     setQuery('');
     setShowDropdown(false);
+    setHasSelected(false);
+  }
+
+  function handleChange(e) {
+    const val = e.target.value;
+    setQuery(val);
+    // User is typing again — reset the "selected" guard
+    if (hasSelected) setHasSelected(false);
   }
 
   return (
@@ -57,8 +68,8 @@ export default function SearchBar({ onBookSelected }) {
           type="text"
           placeholder="Search for a book…"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => results.length > 0 && setShowDropdown(true)}
+          onChange={handleChange}
+          onFocus={() => results.length > 0 && !hasSelected && setShowDropdown(true)}
           onKeyDown={handleKeyDown}
           autoComplete="off"
         />
@@ -72,7 +83,7 @@ export default function SearchBar({ onBookSelected }) {
         )}
       </div>
 
-      {showDropdown && query.trim().length >= 2 && (
+      {showDropdown && query.trim().length >= 2 && !hasSelected && (
         <SearchDropdown results={results} onSelect={handleSelect} />
       )}
     </div>

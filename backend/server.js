@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 8080;
 app.use(cors({
   origin: [
     'http://localhost:5173',  // Vite server
+    'http://localhost:5174',  // Vite fallback port
     'http://localhost:3000',  
   ],
   credentials: true,

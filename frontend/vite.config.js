@@ -13,7 +13,21 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        timeout: 60000, // 60s — Gemini + geocoding can take 15-20s
+        timeout: 120000,       // 2 minutes — Gemini + geocoding can be slow
+        proxyTimeout: 120000,  // Also set the proxy-side timeout
+        configure: (proxy) => {
+          // Log proxy errors instead of crashing with a generic 502
+          proxy.on('error', (err, _req, res) => {
+            console.error('[Vite Proxy Error]', err.message);
+            if (!res.headersSent) {
+              res.writeHead(502, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({
+                error: 'Backend unreachable. Make sure the backend server is running on port 8080.',
+                details: err.message,
+              }));
+            }
+          });
+        },
       },
     },
   },
