@@ -1,0 +1,15 @@
+<svg width="680" height="680" viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Atlas of Stories logo</title>
+<desc>An open book whose spine tapers upward into a single compass needle point, drawn as one continuous form in muted gold and parchment white on dark charcoal.</desc>
+<rect x="0" y="0" width="680" height="680" fill="#0F0D0B"/>
+
+<path d="M340,300 Q250,253 158,276 L158,432 L340,462 Z" fill="none" stroke="#C9A96A" stroke-width="3"/>
+<path d="M340,300 Q430,253 522,276 L522,432 L340,462 Z" fill="none" stroke="#C9A96A" stroke-width="3"/>
+
+<rect x="334" y="298" width="12" height="164" rx="4" fill="#C9A96A"/>
+
+<path d="M340,148 L361,300 L340,318 L319,300 Z" fill="#F5EFE3"/>
+
+<line x1="340" y1="462" x2="340" y2="500" stroke="#C9A96A" stroke-width="3"/>
+<circle cx="340" cy="462" r="7" fill="#F5EFE3"/>
+</svg>
