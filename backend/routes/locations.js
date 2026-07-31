@@ -10,7 +10,7 @@ const { geocodeLocations } = require('../services/geocoder');
 router.get('/:workId/locations', async (req, res) => {
   try {
     const { workId } = req.params;
-    const { title, author, year } = req.query;
+    const { title, author, year, coverId } = req.query;
 
     console.log(`\n${'='.repeat(50)}`);
     console.log(`Processing: "${title || workId}"`);
@@ -30,6 +30,7 @@ router.get('/:workId/locations', async (req, res) => {
       title: title || bookDetails.title,
       author: author || 'Unknown Author',
       year: year || null,
+      coverId: coverId || null,
       description: bookDetails.description,
       subjects: bookDetails.subjects,
       places: bookDetails.places,
@@ -47,6 +48,7 @@ router.get('/:workId/locations', async (req, res) => {
         title: bookInfo.title,
         author: bookInfo.author,
         year: bookInfo.year,
+        coverId: bookInfo.coverId,
         description: bookInfo.description,
       },
       locations: geocodedLocations,

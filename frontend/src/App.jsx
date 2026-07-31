@@ -27,7 +27,14 @@ function App() {
       : book.workId;
 
     try {
-      const data = await getLocations(workId);
+      const bookParams = {
+        title: book.title,
+        author: book.author_name?.[0] || book.author,
+        year: book.first_publish_year || book.year,
+        coverId: book.cover_i || book.coverId,
+      };
+      
+      const data = await getLocations(workId, bookParams);
       setLocations(data.locations || data || []);
     } catch (err) {
       console.error('Failed to load locations:', err);

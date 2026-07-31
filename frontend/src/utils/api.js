@@ -67,10 +67,18 @@ export async function getBookDetails(workId) {
   return res.json();
 }
 
-export async function getLocations(workId) {
+export async function getLocations(workId, bookParams = {}) {
+  const params = new URLSearchParams();
+  if (bookParams.title) params.append('title', bookParams.title);
+  if (bookParams.author) params.append('author', bookParams.author);
+  if (bookParams.year) params.append('year', bookParams.year);
+  if (bookParams.coverId) params.append('coverId', bookParams.coverId);
+
+  const queryString = params.toString() ? `?${params.toString()}` : '';
+
   // Locations can take a while (Gemini + geocoding), use longer timeout
   const res = await fetchWithRetry(
-    `${API_BASE}/books/${workId}/locations`,
+    `${API_BASE}/books/${workId}/locations${queryString}`,
     {},
     { retries: 2, timeoutMs: 60000 }
   );
