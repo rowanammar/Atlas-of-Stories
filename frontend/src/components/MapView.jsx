@@ -1,6 +1,9 @@
 import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import * as maplibregl from 'maplibre-gl';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+
+maplibregl.setWorkerUrl(workerUrl);
 
 const TYPE_CLASSES = {
   'plot setting':       'plot-setting',
