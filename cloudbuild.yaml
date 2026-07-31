@@ -1,0 +1,36 @@
+steps:
+  # 1. Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/atlas-repo/atlas-app:latest'
+      - '.'
+
+  # 2. Push the Docker image to the Artifact Registry Terraform made
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/atlas-repo/atlas-app:latest'
+
+  # 3. Deploy the container to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'atlas-app'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/atlas-repo/atlas-app:latest'
+      - '--region'
+      - 'us-central1'
+      - '--allow-unauthenticated'
+      - '--service-account'
+      - 'atlas-cloudrun-sa@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--set-secrets'
+      - 'GEOCODING_API_KEY=geocoding-api-key:latest'
+      - '--set-env-vars'
+      - 'GCP_PROJECT_ID=$PROJECT_ID'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
