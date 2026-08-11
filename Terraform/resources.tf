@@ -45,6 +45,11 @@ resource "google_project_iam_member" "ai_access" {
   role    = "roles/aiplatform.user"
   member  = "serviceAccount:${google_service_account.cloudrun_sa.email}"
 }
+resource "google_project_iam_member" "cloudrun_sa_log_writer" {
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.cloudrun_sa.email}"
+}
 data "google_project" "project" {
   project_id = var.project_id
 }
