@@ -133,11 +133,6 @@ const MapView = forwardRef(function MapView({ locations }, ref) {
       }
     });
 
-    mapRef.current.addControl(
-      new maplibregl.AttributionControl({ compact: true }),
-      'bottom-left'
-    );
-
     return () => {
       mapRef.current?.remove();
       mapRef.current = null;

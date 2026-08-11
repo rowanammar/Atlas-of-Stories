@@ -5,6 +5,7 @@ import MapView from './components/MapView';
 import WelcomeOverlay from './components/WelcomeOverlay';
 import LoadingOverlay from './components/LoadingOverlay';
 import SurpriseButton from './components/SurpriseButton';
+import InfoButton from './components/InfoButton';
 import { getLocations } from './utils/api';
 
 function App() {
@@ -77,6 +78,7 @@ function App() {
       )}
 
       <SurpriseButton onBookSelected={handleBookSelected} />
+      <InfoButton />
 
       {error && (
         <div className="error-toast" onClick={() => setError(null)}>
