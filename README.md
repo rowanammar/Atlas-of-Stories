@@ -12,7 +12,7 @@ Try it here: [Atlas of Stories](https://atlas-app-666753333780.us-central1.run.a
 - **Surprise Me**: Click the surprise button to discover random classic books and their geographical journeys.
 
 ## 🏗️ Architecture & Tech Stack
-
+   
 - **Frontend**: React (Vite), MapLibre GL
 - **Backend**: Node.js, Express.js
 - **Cloud & Infrastructure** (GCP):
