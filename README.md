@@ -12,7 +12,7 @@ Try it here: [Atlas of Stories](https://atlas-app-666753333780.us-central1.run.a
 - **Surprise Me**: Click the surprise button to discover random classic books and their geographical journeys.
 
 ## 🏗️ Architecture & Tech Stack
-   
+   ![System Arch](architecture.png)
 - **Frontend**: React (Vite), MapLibre GL
 - **Backend**: Node.js, Express.js
 - **Cloud & Infrastructure** (GCP):
@@ -32,6 +32,3 @@ The application is fully containerized and configured for CI/CD via **Google Clo
    - Pushes it to Artifact Registry.
    - Deploys the new revision to **Google Cloud Run**.
 3. **Secrets**: Ensure your `GEOCODING_API_KEY` and `GEMINI_API_KEY` are stored in Google Secret Manager and accessible by the Cloud Run Service Account.
-
-## 📄 License
-This project is open-source and available under the MIT License.
