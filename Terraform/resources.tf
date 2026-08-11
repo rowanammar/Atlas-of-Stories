@@ -50,6 +50,21 @@ resource "google_project_iam_member" "cloudrun_sa_log_writer" {
   role    = "roles/logging.logWriter"
   member  = "serviceAccount:${google_service_account.cloudrun_sa.email}"
 }
+resource "google_project_iam_member" "cloudrun_sa_ar_writer" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.cloudrun_sa.email}"
+}
+resource "google_project_iam_member" "cloudrun_sa_run_admin" {
+  project = var.project_id
+  role    = "roles/run.admin"
+  member  = "serviceAccount:${google_service_account.cloudrun_sa.email}"
+}
+resource "google_project_iam_member" "cloudrun_sa_sa_user" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.cloudrun_sa.email}"
+}
 data "google_project" "project" {
   project_id = var.project_id
 }
